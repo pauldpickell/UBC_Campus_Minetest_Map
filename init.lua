@@ -29,18 +29,11 @@ end
 
 function UBCMap.place(startPosition)
 
-    local clock = os.clock
-    local function sleep(n)
-        -- seconds
-        local t0 = clock()
-        while clock() - t0 <= n do
-        end
-    end
-
     -- GC before we start placing the map
     collectgarbage("collect")
 
     UBCMap.storage:set_string("finishedGenerating", "false")
+    UBCMap.storage:set_string("placementPos", minetest.serialize(startPosition))
 
     if (startPosition == nil) then
         startPosition = { x = 0, y = -3, z = 0 }
@@ -88,19 +81,17 @@ function UBCMap.place(startPosition)
             minetest.chat_send_all(completion .. " % done!")
 
             collectgarbage("collect")
-
-            -- Wait to let the GC work and for minetest to save to disk;
-            sleep(5)
         end
-        -- Let Minetest save chunks from memory to disk
-        sleep(5)
+
         -- Collect garbage again;
         collectgarbage("collect")
     end
 
     UBCMap.storage:set_string("finishedGenerating", "true")
+    UBCMap.storage:set_string("placementPos", "")
     Debug.log("Finished placing UBC Map!")
     minetest.chat_send_all("Finished generating!")
+
 end
 
 dofile(UBCMap.path .. "/integration.lua")
@@ -114,8 +105,10 @@ minetest.register_on_joinplayer(function(player, last_logon)
     if (triggered == false) then
         triggered = true
         local status = UBCMap.storage:get_string("finishedGenerating")
-        if (status == nil or status == "" or status == "false") then
-            mc_worldManager.GetSpawnRealm()
+        if (status == "false") then
+
+            local pos = minetest.deserialize(UBCMap.storage:get_string("placementPos"))
+            UBCMap.place(pos)
         end
     end
 end)
