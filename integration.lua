@@ -7,10 +7,7 @@ if (mc_worldManager) then
         UBCMap.place(realm.StartPos)
     end
 
-    local status = UBCMap.storage:get_string("finishedGenerating")
-    if (status == "false" or status == nil) then
-        mc_worldManager.GetSpawnRealm()
-    end
+
 end
 
 
