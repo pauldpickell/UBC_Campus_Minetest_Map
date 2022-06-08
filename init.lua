@@ -1,6 +1,6 @@
 UBCMap = { path = minetest.get_modpath("ubc_campus_minetest_map"), storage = minetest.get_mod_storage() }
 
-function UBCMap:placeSchematic(pos1, pos2, schematic, rotation, replacement, force_placement)
+function UBCMap:placeSchematic(pos1, pos2, v, rotation, replacement, force_placement)
 
     -- Read data into LVM
     local vm = minetest.get_voxel_manip()
@@ -10,8 +10,19 @@ function UBCMap:placeSchematic(pos1, pos2, schematic, rotation, replacement, for
         MaxEdge = emax
     }
 
-    minetest.place_schematic_on_vmanip(vm, pos1, schematic, rotation, replacement, force_placement)
-    vm:write_to_map(true)
+    minetest.place_schematic_on_vmanip(vm, pos1, UBCMap.path .. "/schems/ubc_blocks_" .. tostring(v) .. ".mts", rotation, replacement, force_placement)
+    minetest.chat_send_all("combined terrain tile " .. tostring(v))
+    minetest.place_schematic_on_vmanip(vm, pos1, UBCMap.path .. "/schems/ubc_trees_" .. tostring(v) .. ".mts", rotation, replacement, force_placement)
+    minetest.chat_send_all("combined trees tile " .. tostring(v))
+    minetest.place_schematic_on_vmanip(vm, pos1, UBCMap.path .. "/schems/ubc_urban_" .. tostring(v) .. ".mts", rotation, replacement, force_placement)
+    minetest.chat_send_all("combined urban tile " .. tostring(v))
+
+    if (mc_worldManager == nil) then
+        minetest.place_schematic_on_vmanip(vm, pos1, UBCMap.path .. "/schems/ubc_unbreakable_map_barrier_" .. tostring(v) .. ".mts", rotation, replacement, force_placement)
+        minetest.chat_send_all("combined unbreakable map barrier tile " .. tostring(v))
+    end
+
+    vm:write_to_map(false)
 end
 
 function UBCMap.place(startPosition)
@@ -52,23 +63,8 @@ function UBCMap.place(startPosition)
             local startPos = { x = coord[1], y = startPosition.y, z = coord[2] }
             local endPos = { x = startPos.x + 500, y = startPos.y + 500, z = startPos.z + 500 }
 
-            UBCMap:placeSchematic(startPos, endPos, UBCMap.path .. "/schems/ubc_blocks_" .. tostring(v) .. ".mts", "0", nil, false)
-            minetest.chat_send_all("Placed terrain tile " .. tostring(v))
-
-
-            -- place trees second
-            UBCMap:placeSchematic(startPos, endPos, UBCMap.path .. "/schems/ubc_trees_" .. tostring(v) .. ".mts", "0", nil, false)
-            minetest.chat_send_all("Placed trees tile " .. tostring(v))
-
-            -- place urban third
-            UBCMap:placeSchematic(startPos, endPos, UBCMap.path .. "/schems/ubc_urban_" .. tostring(v) .. ".mts", "0", nil, false)
-            minetest.chat_send_all("Placed urban tile " .. tostring(v))
-
-            -- place unbreakable map barrier last
-            if (mc_worldManager == nil) then
-                UBCMap:placeSchematic(startPos, endPos, UBCMap.path .. "/schems/ubc_unbreakable_map_barrier_" .. tostring(v) .. ".mts", "0", nil, false)
-                minetest.chat_send_all("Placed unbreakable map barrier tile " .. tostring(v))
-            end
+            UBCMap:placeSchematic(startPos, endPos, v, "0", nil, false)
+            minetest.chat_send_all("Placed combined tile: " .. tostring(v) .. " in world.")
 
             UBCMap.storage:set_int("placementProgress", v)
 
