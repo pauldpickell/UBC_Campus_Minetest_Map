@@ -17,10 +17,10 @@ function UBCMap:placeSchematic(pos1, pos2, v, rotation, replacement, force_place
     minetest.place_schematic_on_vmanip(vm, pos1, UBCMap.path .. "/schems/ubc_urban_" .. tostring(v) .. ".mts", rotation, replacement, force_placement)
     minetest.chat_send_all("combined urban tile " .. tostring(v))
 
-    if (mc_worldManager == nil) then
-        minetest.place_schematic_on_vmanip(vm, pos1, UBCMap.path .. "/schems/ubc_unbreakable_map_barrier_" .. tostring(v) .. ".mts", rotation, replacement, force_placement)
-        minetest.chat_send_all("combined unbreakable map barrier tile " .. tostring(v))
-    end
+    --   if (mc_worldManager == nil) then
+    minetest.place_schematic_on_vmanip(vm, pos1, UBCMap.path .. "/schems/ubc_unbreakable_map_barrier_" .. tostring(v) .. ".mts", rotation, replacement, force_placement)
+    minetest.chat_send_all("combined unbreakable map barrier tile " .. tostring(v))
+    --  end
 
     -- The boolean parameter is whether or not we should update the lighting
     -- It causes a complete remesh; so I want to save this until the player loads into the area...
@@ -28,6 +28,18 @@ function UBCMap:placeSchematic(pos1, pos2, v, rotation, replacement, force_place
 end
 
 function UBCMap.place(startPosition)
+
+    local clock = os.clock
+    local function sleep(n)
+        -- seconds
+        local t0 = clock()
+        while clock() - t0 <= n do
+        end
+    end
+
+    -- GC before we start placing the map
+    collectgarbage("collect")
+
     UBCMap.storage:set_string("finishedGenerating", "false")
 
     if (startPosition == nil) then
@@ -74,8 +86,18 @@ function UBCMap.place(startPosition)
 
             Debug.log(completion .. " % done!")
             minetest.chat_send_all(completion .. " % done!")
+
+            collectgarbage("collect")
+
+            -- Wait to let the GC work and for minetest to save to disk;
+            sleep(5)
         end
+        -- Let Minetest save chunks from memory to disk
+        sleep(5)
+        -- Collect garbage again;
+        collectgarbage("collect")
     end
+
     UBCMap.storage:set_string("finishedGenerating", "true")
     Debug.log("Finished placing UBC Map!")
     minetest.chat_send_all("Finished generating!")
