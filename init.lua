@@ -22,6 +22,8 @@ function UBCMap:placeSchematic(pos1, pos2, v, rotation, replacement, force_place
         minetest.chat_send_all("combined unbreakable map barrier tile " .. tostring(v))
     end
 
+    -- The boolean parameter is whether or not we should update the lighting
+    -- It causes a complete remesh; so I want to save this until the player loads into the area...
     vm:write_to_map(false)
 end
 
