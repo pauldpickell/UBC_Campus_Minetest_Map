@@ -66,7 +66,7 @@ function UBCMap:calculateLighting(pos1, pos2)
     minetest.emerge_area(pos1, pos2, emerge_callback, context)
 end
 
-function UBCMap.place(startPosition)
+function UBCMap.place(startPosition, emergeLighting)
     -- GC before we start placing the map
     collectgarbage("collect")
 
@@ -74,6 +74,10 @@ function UBCMap.place(startPosition)
         startPosition = { x = 0, y = -3, z = 0 }
     else
         startPosition = { x = startPosition.x, y = startPosition.y, z = startPosition.z }
+    end
+
+    if (emergeLighting == nil) then
+        emergeLighting = true
     end
 
     UBCMap.storage:set_string("finishedGenerating", "false")
@@ -132,7 +136,10 @@ function UBCMap.place(startPosition)
     local startPos = { x = startPosition.x, y = startPosition.y, z = startPosition.z }
     local endPos = { x = startPosition.x + 2500, y = startPosition.y + 250, z = startPosition.z + 3500 }
 
-    UBCMap:calculateLighting(startPos, endPos)
+    if (emergeLighting) then
+        UBCMap:calculateLighting(startPos, endPos)
+    end
+
 
     Debug.log("Finished placing UBC Map!")
     minetest.chat_send_all("Finished generating!")

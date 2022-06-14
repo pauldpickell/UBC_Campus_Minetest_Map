@@ -4,7 +4,7 @@ if (mc_worldManager) then
     --  mc_worldManager.spawnRealmSchematic = "ubc"
 
     function UBCMap.placeRealm(realm)
-        UBCMap.place(realm.StartPos)
+        UBCMap.place(realm.StartPos, false)
     end
 else
 
