@@ -7,6 +7,12 @@ if (mc_worldManager) then
         UBCMap.place(realm.StartPos)
     end
 else
+
+    Debug = {}
+    function Debug.log(message)
+        minetest.debug(message)
+    end
+
     -- We'll register this command if we're not using the realm system from MC_worldmanager so that the map can still be placed.
     -- If we are using the realm system, we don't want this command as it can and will interfere.
     minetest.register_chatcommand("mosaic_mts", {
