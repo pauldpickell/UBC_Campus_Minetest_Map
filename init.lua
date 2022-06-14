@@ -42,7 +42,6 @@ function UBCMap:calculateLighting(pos1, pos2)
         -- Increment number of blocks loaded
         context.loaded_blocks = context.loaded_blocks + 1
 
-
         if context.total_blocks == context.loaded_blocks then
             minetest.chat_send_all("Finished calculating light for the UBC map!")
         end
@@ -131,15 +130,13 @@ function UBCMap.place(startPosition, emergeLighting)
 
     UBCMap.storage:set_string("finishedGenerating", "true")
     UBCMap.storage:set_string("placementPos", "")
-    Debug.log("Emerging lighting")
-
-    local startPos = { x = startPosition.x, y = startPosition.y, z = startPosition.z }
-    local endPos = { x = startPosition.x + 2500, y = startPosition.y + 250, z = startPosition.z + 3500 }
-
     if (emergeLighting) then
+        Debug.log("Emerging lighting")
+        local startPos = { x = startPosition.x, y = startPosition.y, z = startPosition.z }
+        local endPos = { x = startPosition.x + 2500, y = startPosition.y + 250, z = startPosition.z + 3500 }
+
         UBCMap:calculateLighting(startPos, endPos)
     end
-
 
     Debug.log("Finished placing UBC Map!")
     minetest.chat_send_all("Finished generating!")
