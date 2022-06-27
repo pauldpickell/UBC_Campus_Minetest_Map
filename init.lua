@@ -49,13 +49,7 @@ function UBCMap:calculateLighting(pos1, pos2)
         local pos1 = { x = blockpos.x * 16, y = blockpos.y * 16, z = blockpos.z * 16 }
         local pos2 = { x = blockpos.x * 16 + 15, y = blockpos.y * 16 + 15, z = blockpos.z * 16 + 15 }
 
-        local vm = minetest.get_voxel_manip()
-        local emin, emax = vm:read_from_map(pos1, pos2)
-        local a = VoxelArea:new {
-            MinEdge = emin,
-            MaxEdge = emax
-        }
-        vm:write_to_map(true)
+        minetest.fix_light(pos1, pos2)
 
         Debug.log("Finished calculating light for chunk: " .. context.loaded_blocks .. "/" .. context.total_blocks)
     end
